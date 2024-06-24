@@ -1,13 +1,13 @@
 import torch
 from torch.nn import functional as F
 
-def unit_Weiner_process(x, noise_source=torch.randn_like):
+def unit_Weiner_process(x, noise_source=torch.randn_like, device='cpu'):
     """
     Computes dynamic update of a unit Weiner process given the input tensor
     """
-    return noise_source(x)
+    return noise_source(x, device=device)
 
-def unit_OU_process(x, noise_source=torch.randn_like):
+def unit_OU_process(x, noise_source=torch.randn_like, device='cpu'):
     """
     Computes dynamic update of a unit Ornstein-Uhlenbeck process given the input tensor.
 
@@ -19,9 +19,9 @@ def unit_OU_process(x, noise_source=torch.randn_like):
     Returns:
         The result of applying the unit UH process to x.
     """
-    return -x + noise_source(x)
+    return -x + noise_source(x, device=device)
 
-def anticorrelated_noise(x, noise_source=torch.randn_like):
+def anticorrelated_noise(x, noise_source=torch.randn_like, device='cpu'):
     """
     Generates anti-correlated noise in the shape of the input tensor.
 
@@ -33,11 +33,11 @@ def anticorrelated_noise(x, noise_source=torch.randn_like):
     Returns:
         torch.Tensor: Anticorrelated noise in the shape of x.
     """
-    a = noise_source(x)
+    a = noise_source(x, device=device)
     diff = a[1:] - a[:-1]
     return F.pad(diff, (0, 0) * (x.dim() - 1) + (1, 0))
 
-def correlated_noise(x, noise_source=torch.randn_like):
+def correlated_noise(x, noise_source=torch.randn_like, device='cpu'):
     """
     Generates correlated noise in the shape of the input tensor.
 
@@ -50,6 +50,6 @@ def correlated_noise(x, noise_source=torch.randn_like):
         torch.Tensor: Correlated noise in the shape of x.
 
     """
-    a = noise_source(x)
+    a = noise_source(x, device=device)
     diff = a[1:] + a[:-1]
     return F.pad(diff, (0, 0) * (x.dim() - 1) + (1, 0))

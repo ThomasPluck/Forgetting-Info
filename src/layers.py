@@ -205,12 +205,12 @@ class KernelDeltaLayer(nn.Module):
             Ebx = Eb * Ex
             
             # Compute covariance
-            cov_w = torch.mean(Ewx,dim=0) - torch.mean(Ew, dim=0) * torch.mean(Ex, dim=0)
-            cov_b = torch.mean(Ebx,dim=0) - torch.mean(Eb, dim=0) * torch.mean(Ex, dim=0)
+            cov_w = torch.mean(Ewx - torch.mean(Ew, dim=0) * torch.mean(Ex, dim=0), dim=0)
+            cov_b = torch.mean(Ebx - torch.mean(Eb, dim=0) * torch.mean(Ex, dim=0), dim=0)
             
             # Update eta values
-            self.eta_w = self.eta * cov_w
-            self.eta_b = self.eta * cov_b
+            self.eta_w = self.eta * torch.abs(cov_w)
+            self.eta_b = self.eta * torch.abs(cov_b)
 
     def update_parameters(self, dLdW, dLdb):
         """
